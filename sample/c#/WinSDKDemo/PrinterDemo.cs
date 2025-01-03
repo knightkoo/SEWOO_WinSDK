@@ -1,5 +1,10 @@
 ﻿using System;
+using System.IO;
 using System.Runtime.InteropServices;
+using System.Drawing;
+using System.Drawing.Imaging;
+using TheArtOfDev.HtmlRenderer.WinForms;
+using WinSDKDemo.Helper;
 
 namespace WinSDKDemo
 {
@@ -209,6 +214,87 @@ namespace WinSDKDemo
             PrinterInitialize(printer);
             int ret = PrintImageW(printer, path, 0);
             CutPaperWithDistance(printer, 10);
+        }
+
+        public static void PrintBuffer(IntPtr printer)
+        {
+            try
+            {
+                // 이미지 크기 설정
+                int width = CalcPrintWidth(paperWidth:72, dpi:208);
+                int height = 400;
+
+                string[] fontNames = { "굴림", "돋움", "맑은 고딕", "궁서체", "휴먼옛체" };
+
+                // DrawingBuffer 인스턴스 생성
+                using (DrawingCanvas canvas = new DrawingCanvas(width, height))
+                {
+                    // 텍스트 출력
+                    int index = 0;
+                    foreach (string fontName in fontNames)
+                    {
+                        Font font = new Font(fontName, 24, FontStyle.Bold);
+                        Brush brush = Brushes.Black;
+                        PointF textPosition = new PointF(20, 20 + index * 50);
+                        canvas.DrawText($"{fontName} : 무궁화 꽃이 피었습니다.", font, brush, textPosition);
+                        index++;
+                    }
+
+                    // 사각형 그리기
+                    Pen rectPen = new Pen(Color.Black, 3);
+                    Rectangle rectangle = new Rectangle(0, 0, width, 400 - 2);
+                    canvas.DrawRectangle(rectPen, rectangle);
+
+                    // 이미지 파일로 저장
+                    string filePath = Path.Combine(Path.GetTempPath(), "temp_output.png");
+                    canvas.SaveToFile(filePath, ImageFormat.Png);
+
+                    PrintImage(printer, filePath);
+                    File.Delete(filePath);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"오류 발생: {ex.Message}");
+            }
+        }
+
+        public static void PrintHtml(IntPtr printer)
+        {
+            int width = CalcPrintWidth(paperWidth: 72, dpi: 208);
+
+            using (var image = new Bitmap(10, 10))
+            using (var graphics = Graphics.FromImage(image))
+            {
+                string html = System.IO.File.ReadAllText(@"..\Contents\receipt.html");
+                //1. 출력될 Html 랜더링 영역을 계산한다.
+                var size = HtmlRender.Measure(graphics, html, maxWidth: width);
+
+                //2. 랜더링 크기 맞도록 출력 객체를 생성한다.
+                using (var renderImage = new Bitmap(width, (int)size.Height + 10))
+                using (var renderGraphics = Graphics.FromImage(renderImage))
+                {
+                    size = HtmlRender.Render(renderGraphics, html, maxWidth: width);
+                    string filePath = Path.Combine(Path.GetTempPath(), "print_output.png");
+                    renderImage.Save(filePath, ImageFormat.Png);
+
+                    PrintImage(printer, filePath);
+
+                    File.Delete(filePath);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 프린트 출력 넓이를 계산한다. ( 인치 * DPI )
+        /// </summary>
+        /// <param name="paperWidth">출력 영역 (mm)</param>
+        /// <param name="dpi">DPI</param>
+        /// <returns></returns>
+        public static int CalcPrintWidth(int paperWidth = 72, int dpi = 208)
+        {
+            float inch = (float)paperWidth / 25.4f;
+            return (int)( inch * (float)dpi);
         }
     }
 }

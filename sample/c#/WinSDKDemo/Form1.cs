@@ -44,6 +44,8 @@ namespace WinSDKDemo
             btn_PrinterStatus.Enabled = isOpen && selRb != rb_lpt;
             btn_Open.Enabled = !isOpen;
             btn_Close.Enabled = isOpen;
+            btn_PrintFont.Enabled = isOpen;
+            btn_PrintHtml.Enabled = isOpen;
         }
 
         private void btn_Open_Click(object sender, EventArgs e)
@@ -138,6 +140,16 @@ namespace WinSDKDemo
         private void rb_CheckedChanged(object sender, EventArgs e)
         {
             selRb = (RadioButton)sender;
+        }
+
+        private void btn_PrintFont_Click(object sender, EventArgs e)
+        {
+            PrinterDemo.PrintBuffer(printer);
+        }
+
+        private void btn_PrintHtml_Click(object sender, EventArgs e)
+        {
+            PrinterDemo.PrintHtml(printer);
         }
     }
 }

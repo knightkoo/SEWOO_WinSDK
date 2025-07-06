@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
+using Printer;
 
 namespace LKCSTest
 {
@@ -62,11 +63,13 @@ namespace LKCSTest
 
             txtIP.Text = "192.168.1.192";
             txtIP.Enabled = false;
+
+            PrinterAgent.Instance.Prepare();
         }
 
         private void exitButton_Click(object sender, EventArgs e)
         {
-            LKPrint.ClosePort();
+            LKPrint._ClosePort();
             this.Close();
         }
 
@@ -95,14 +98,14 @@ namespace LKCSTest
             if (sIndex == 8)
             {
                 // connect network
-                lResult = LKPrint.OpenPort(txtIP.Text, 9100);
+                lResult = LKPrint._OpenPort(txtIP.Text, 9100);
             }
             else
             {
                 // connect other Interface 
                 port = portNameCBox.SelectedItem.ToString();
                 baudRate = Int32.Parse(baudRateCBox.SelectedItem.ToString());
-                lResult = LKPrint.OpenPort(port, baudRate);
+                lResult = LKPrint._OpenPort(port, baudRate);
             }
             if (lResult != 0)
             {
@@ -135,7 +138,7 @@ namespace LKCSTest
 
         private void closeButton_Click(object sender, EventArgs e)
         {
-            long lResult = LKPrint.ClosePort();
+            long lResult = LKPrint._ClosePort();
             if (lResult != 0)
             {
                 MessageBox.Show("Close Port Failed", "Error", MessageBoxButtons.OK);
@@ -173,7 +176,7 @@ namespace LKCSTest
 
         private void cashDrawerOpenButton_Click(object sender, EventArgs e)
         {
-            //Helper.PrintHelper.PrintBuffer();
+
             Helper.PrintHelper.PrintHtml();
 
             //long lResult;
@@ -277,7 +280,7 @@ namespace LKCSTest
             if(useprinterdriver)
 	        {
 		        m_strPrinter = pDriverNameTextBox.Text.ToString();
-                lResult = LKPrint.OpenPort(m_strPrinter, 1);
+                lResult = LKPrint._OpenPort(m_strPrinter, 1);
 		        if(lResult != 0)
 		        {
 			        MessageBox.Show("OpenPrinter Failed","Error",MessageBoxButtons.OK);		
@@ -286,12 +289,12 @@ namespace LKCSTest
 	        }
             
             LKPrint.PrintStart();
-            //LKPrint.PrintString(TempStr);
-            LKPrint.PrintBitmap(".\\Logo.bmp", LKPrint.LK_ALIGNMENT_CENTER, 0, 5, 0);
+            LKPrint.PrintString(TempStr);
+            //LKPrint._PrintBitmap(".\\Logo.bmp", LKPrint.LK_ALIGNMENT_CENTER, 0, 5, 0);
 
-        //    PrintString(strCenter + "Test for PrintData Function\n");
-        //    PrintData(strLeftPrintData, 3);
-        //    PrintString("Test for PrintData Function\n");
+            //PrintString(strCenter + "Test for PrintData Function\n");
+            //PrintData(strLeftPrintData, 3);
+            //PrintString("Test for PrintData Function\n");
 
             LKPrint.PrintString(PartialCut);
 
@@ -299,7 +302,7 @@ namespace LKCSTest
             
             if(useprinterdriver)
 	        {
-                lResult = LKPrint.ClosePort();
+                lResult = LKPrint._ClosePort();
 		        if(lResult != 0)
 		        {
 			        MessageBox.Show("ClosePrinter Failed!!!", "Error", MessageBoxButtons.OK);
@@ -315,7 +318,7 @@ namespace LKCSTest
             if (useprinterdriver)
             {
                 m_strPrinter = pDriverNameTextBox.Text.ToString();
-                lResult = LKPrint.OpenPort(m_strPrinter, 1);
+                lResult = LKPrint._OpenPort(m_strPrinter, 1);
                 if (lResult != 0)
                 {
                     MessageBox.Show("OpenPrinter Failed","Error",MessageBoxButtons.OK);
@@ -325,7 +328,7 @@ namespace LKCSTest
             
             LKPrint.PrintStart();
 
-            LKPrint.PrintBitmap(".\\Logo.bmp", 1, 0, 5, 0); // Print Bitmap
+            LKPrint._PrintBitmap(".\\Logo.bmp", 1, 0, 5, 0); // Print Bitmap
 
             LKPrint.PrintNormal("\x1b|rATEL (123)-456-7890\n\n\n");
             LKPrint.PrintNormal("\x1b|cAThank you for coming to our shop!\n");
@@ -342,7 +345,7 @@ namespace LKCSTest
             LKPrint.PrintNormal("Change                              $42.50\n\n");
             LKPrint.PrintBarCode("1234567890", 109, 40, 512, 1, 2); // Print Barcode
 
-            LKPrint.PrintBitmap(".\\LUKHAN-logo.bmp", 1, 0, 5, 1); // Print Bitmap
+            LKPrint._PrintBitmap(".\\LUKHAN-logo.bmp", 1, 0, 5, 1); // Print Bitmap
 
             LKPrint.PrintNormal("\x1b|fP"); // Partial Cut.
 
@@ -350,7 +353,7 @@ namespace LKCSTest
 
             if (useprinterdriver)
             {
-                lResult = LKPrint.ClosePort();
+                lResult = LKPrint._ClosePort();
                 if (lResult != 0)
                 {
                     MessageBox.Show("ClosePrinter Failed!!!", "Error", MessageBoxButtons.OK);
@@ -367,7 +370,7 @@ namespace LKCSTest
             if (useprinterdriver)
             {
                 m_strPrinter = pDriverNameTextBox.Text.ToString();
-                lResult = LKPrint.OpenPort(m_strPrinter, 1);
+                lResult = LKPrint._OpenPort(m_strPrinter, 1);
                 if (lResult != 0)
                 {
                     MessageBox.Show("Open Port Failed","Error",MessageBoxButtons.OK);
@@ -391,13 +394,13 @@ namespace LKCSTest
             LKPrint.PrintText("Payment                            $200.00\r\n", LKPrint.LK_ALIGNMENT_LEFT, LKPrint.LK_FNT_DEFAULT, LKPrint.LK_TXT_1WIDTH);
             LKPrint.PrintText("Change                              $42.50\r\n\r\n", LKPrint.LK_ALIGNMENT_LEFT, LKPrint.LK_FNT_DEFAULT, LKPrint.LK_TXT_1WIDTH);
             LKPrint.PrintBarCode(BarData, LKPrint.LK_BCS_Code39, 40, 512, LKPrint.LK_ALIGNMENT_CENTER, LKPrint.LK_HRI_TEXT_BELOW);
-            LKPrint.PrintBitmap(".\\Logo.bmp", LKPrint.LK_ALIGNMENT_RIGHT, LKPrint.LK_BITMAP_NORMAL, 5, 1);
+            LKPrint._PrintBitmap(".\\Logo.bmp", LKPrint.LK_ALIGNMENT_RIGHT, LKPrint.LK_BITMAP_NORMAL, 5, 1);
             LKPrint.CutPaper();
 
             LKPrint.PrintStop();
             if (useprinterdriver)
             {
-                lResult = LKPrint.ClosePort();
+                lResult = LKPrint._ClosePort();
                 if (lResult != 0)
                 {
                     MessageBox.Show("ClosePrinter Failed!!!", "Error", MessageBoxButtons.OK);
@@ -413,7 +416,7 @@ namespace LKCSTest
             if (useprinterdriver)
             {
                 m_strPrinter = pDriverNameTextBox.Text.ToString();
-                lResult = LKPrint.OpenPort(m_strPrinter, 1);
+                lResult = LKPrint._OpenPort(m_strPrinter, 1);
                 if (lResult != 0)
                 {
                     MessageBox.Show("OpenPrinter Failed","Error",MessageBoxButtons.OK);
@@ -455,14 +458,14 @@ namespace LKCSTest
 
             // 
             LKPrint.PrintBarCode("1234567890", 109, 40, 512, 1, 2); // POSPrinter
-            LKPrint.PrintBitmap(".\\LUKHAN-logo.bmp", 1, 0, 5, 1);
+            LKPrint._PrintBitmap(".\\LUKHAN-logo.bmp", 1, 0, 5, 1);
             LKPrint.PrintNormal("\x1b|fP");
 
             LKPrint.PrintStop();
             
             if (useprinterdriver)
             {
-                lResult = LKPrint.ClosePort();
+                lResult = LKPrint._ClosePort();
                 if (lResult != 0)
                 {
                     MessageBox.Show("ClosePrinter Failed!!!", "Error", MessageBoxButtons.OK);
@@ -507,7 +510,7 @@ namespace LKCSTest
             if(useprinterdriver)
 	        {
                 m_strPrinter = pDriverNameTextBox.Text.ToString();
-                lResult = LKPrint.OpenPort(m_strPrinter, 1);
+                lResult = LKPrint._OpenPort(m_strPrinter, 1);
 		        if(lResult != 0)
 		        {
 			        MessageBox.Show("OpenPrinter Failed","Error",MessageBoxButtons.OK);		
@@ -528,7 +531,7 @@ namespace LKCSTest
             
 	        if(useprinterdriver)
 	        {
-                lResult = LKPrint.ClosePort();
+                lResult = LKPrint._ClosePort();
 		        if(lResult != 0)
 		        {
 			        MessageBox.Show("ClosePrinter Failed!!!", "Error", MessageBoxButtons.OK);
@@ -548,7 +551,7 @@ namespace LKCSTest
             if(useprinterdriver)
             {
                 m_strPrinter = pDriverNameTextBox.Text.ToString();
-                lResult = LKPrint.OpenPort(m_strPrinter, 1);
+                lResult = LKPrint._OpenPort(m_strPrinter, 1);
 	            if(lResult != 0)
 	            {
 		            MessageBox.Show("OpenPrinter Failed","Error",MessageBoxButtons.OK);		
@@ -570,7 +573,7 @@ namespace LKCSTest
             
             if(useprinterdriver)
             {
-                lResult = LKPrint.ClosePort();
+                lResult = LKPrint._ClosePort();
 	            if(lResult != 0)
 	            {
 		            MessageBox.Show("ClosePrinter Failed!!!", "Error", MessageBoxButtons.OK);
@@ -590,7 +593,7 @@ namespace LKCSTest
 	        if(useprinterdriver)
 	        {
                 m_strPrinter = pDriverNameTextBox.Text.ToString();
-                lResult = LKPrint.OpenPort(m_strPrinter, 1);
+                lResult = LKPrint._OpenPort(m_strPrinter, 1);
 		        if(lResult != 0)
 		        {
 			        MessageBox.Show("OpenPrinter Failed","Error",MessageBoxButtons.OK);		
@@ -612,7 +615,7 @@ namespace LKCSTest
             
             if(useprinterdriver)
 	        {
-                lResult = LKPrint.ClosePort();
+                lResult = LKPrint._ClosePort();
 		        if(lResult != 0)
 		        {
 			        MessageBox.Show("ClosePrinter Failed!!!", "Error", MessageBoxButtons.OK);
@@ -628,7 +631,7 @@ namespace LKCSTest
             if (useprinterdriver)
             {
                 m_strPrinter = pDriverNameTextBox.Text.ToString();
-                lResult = LKPrint.OpenPort(m_strPrinter, 1);
+                lResult = LKPrint._OpenPort(m_strPrinter, 1);
                 if (lResult != 0)
                 {
                     MessageBox.Show("OpenPrinter Failed","Error",MessageBoxButtons.OK);
@@ -647,7 +650,7 @@ namespace LKCSTest
             
             if (useprinterdriver)
             {
-                lResult = LKPrint.ClosePort();
+                lResult = LKPrint._ClosePort();
                 if (lResult != 0)
                 {
                     MessageBox.Show("ClosePrinter Failed!!!", "Error", MessageBoxButtons.OK);
@@ -663,7 +666,7 @@ namespace LKCSTest
             if (useprinterdriver)
             {
                 m_strPrinter = pDriverNameTextBox.Text.ToString();
-                lResult = LKPrint.OpenPort(m_strPrinter, 1);
+                lResult = LKPrint._OpenPort(m_strPrinter, 1);
                 if (lResult != 0)
                 {
                     MessageBox.Show("OpenPrinter Failed","Error",MessageBoxButtons.OK);
@@ -689,7 +692,7 @@ namespace LKCSTest
             
             if (useprinterdriver)
             {
-                lResult = LKPrint.ClosePort();
+                lResult = LKPrint._ClosePort();
                 if (lResult != 0)
                 {
                     MessageBox.Show("ClosePrinter Failed!!!", "Error", MessageBoxButtons.OK);

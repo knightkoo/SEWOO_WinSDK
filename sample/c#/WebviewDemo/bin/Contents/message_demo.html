@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script type="text/javascript">
+        window.handleMessageFromFlutter = (message) => {
+            alert("Received Message: " + message);
+        }
+
+        function receiveDataFromCSharp(data) {
+            alert("Received from C#: " + data);
+        }
+
+        function sendToWinForm() {
+            window.chrome.webview.postMessage("Hello from JavaScript");
+        }
+    </script>
+</head>
+<body>
+    <h1>WinForms Webview2 Example</h1>
+    <button onclick="sendToWinForm()">Send to WinForm</button>
+</body>
+</html>

@@ -9,6 +9,7 @@ using Helper;
 using System.IO;
 using TheArtOfDev.HtmlRenderer.WinForms;
 using LKCSTest;
+using Printer;
 
 namespace Helper
 {
@@ -50,7 +51,7 @@ namespace Helper
                     canvas.SaveToFile(filePath, ImageFormat.Bmp);
 
                     LKPrint.PrintStart();
-                    LKPrint.PrintBitmap(filePath, LKPrint.LK_ALIGNMENT_CENTER, LKPrint.LK_BITMAP_NORMAL, 5, LKPrint.LK_BITMAP_NO_DITHER);
+                    LKPrint._PrintBitmap(filePath, LKPrint.LK_ALIGNMENT_CENTER, LKPrint.LK_BITMAP_NORMAL, 5, LKPrint.LK_BITMAP_NO_DITHER);
                     LKPrint.PrintNormal("\x1b|fP"); // Partial Cut.
                     LKPrint.PrintStop();
                     File.Delete(filePath);
@@ -69,7 +70,7 @@ namespace Helper
             using (var image = new Bitmap(10, 10))
             using (var graphics = Graphics.FromImage(image))
             {
-                string html = System.IO.File.ReadAllText(@"..\Contents\receipt.html");
+                string html = System.IO.File.ReadAllText(@"c:\Dev\Oq\temp\html\order.html");
                 //1. 출력될 Html 랜더링 영역을 계산한다.
                 var size = HtmlRender.Measure(graphics, html, maxWidth: width);
 
@@ -87,12 +88,15 @@ namespace Helper
                     string filePath = Path.Combine(Path.GetTempPath(), "print_output.bmp");
                     renderImage.Save(filePath, ImageFormat.Bmp);
 
-                    LKPrint.PrintStart();
-                    LKPrint.PrintBitmap(filePath, LKPrint.LK_ALIGNMENT_CENTER, LKPrint.LK_BITMAP_NORMAL, 5, LKPrint.LK_BITMAP_NO_DITHER);
-                    LKPrint.PrintNormal("\x1b|fP"); // Partial Cut.
-                    LKPrint.PrintStop();
+                    //PrinterAgent.Instance.PrintBitmap(filePath);
 
-                    File.Delete(filePath);
+
+                    //LKPrint.PrintStart();
+                    //LKPrint._PrintBitmap(filePath, LKPrint.LK_ALIGNMENT_CENTER, LKPrint.LK_BITMAP_NORMAL, 5, LKPrint.LK_BITMAP_NO_DITHER);
+                    //LKPrint.PrintNormal("\x1b|fP"); // Partial Cut.
+                    //LKPrint.PrintStop();
+
+                    //File.Delete(filePath);
                 }
             }
         }

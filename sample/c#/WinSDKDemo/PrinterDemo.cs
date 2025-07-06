@@ -132,9 +132,9 @@ namespace WinSDKDemo
 
         public static void PrintSample(IntPtr printer)
         {
-            PrinterInitialize(printer);
-            SetRelativeHorizontal(printer, 180);
-            PrintTextS(printer, "Las vegas,NV5208\r\n");
+            var r = PrinterInitialize(printer);
+            r = SetRelativeHorizontal(printer, 180);
+            r = PrintTextS(printer, "Las vegas,NV5208\r\n");
             PrintAndFeedLine(printer);
             PrintAndFeedLine(printer);
             PrintTextS(printer, "Ticket #30-57320             User:HAPPY\r\n");
@@ -281,6 +281,28 @@ namespace WinSDKDemo
                     PrintImage(printer, filePath);
 
                     File.Delete(filePath);
+                }
+            }
+        }
+
+        public static void HtmlToImage()
+        {
+            int width = CalcPrintWidth(paperWidth: 72, dpi: 208);
+
+            using (var image = new Bitmap(10, 10))
+            using (var graphics = Graphics.FromImage(image))
+            {
+                string html = System.IO.File.ReadAllText(@"c:\Dev\Oq\temp\html\receipt.html");
+                //1. 출력될 Html 랜더링 영역을 계산한다.
+                var size = HtmlRender.Measure(graphics, html, maxWidth: width);
+
+                //2. 랜더링 크기 맞도록 출력 객체를 생성한다.
+                using (var renderImage = new Bitmap(width, (int)size.Height + 10))
+                using (var renderGraphics = Graphics.FromImage(renderImage))
+                {
+                    size = HtmlRender.Render(renderGraphics, html, maxWidth: width);
+                    string filePath = Path.Combine("c:\\Temp", "print_output.png");
+                    renderImage.Save(filePath, ImageFormat.Png);
                 }
             }
         }
